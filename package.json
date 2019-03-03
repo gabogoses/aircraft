@@ -1,0 +1,38 @@
+{
+  "name": "aircraft",
+  "version": "1.0.0",
+  "description": "An Aircraft API 🛩️",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gabogoses/aircraft.git",
+    "bugs": "https://github.com/gabogoses/aircraft/issues"
+  },
+  "keywords": [
+    "Aircraft API",
+    "Node.js",
+    "React",
+    "GraphQL",
+    "MongoDB"
+  ],
+  "engines": {
+    "node": ">= 6.0.0",
+    "npm": ">= 3.0.0",
+    "yarn": "^0.13.0"
+  },
+  "author": "Gabo Goses 👨‍🎤 <gabogoses@gmail.com> (https://margoses.com)",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "express-graphql": "^0.7.1",
+    "graphql": "^14.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}
