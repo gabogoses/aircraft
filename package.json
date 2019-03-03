@@ -27,10 +27,12 @@
   "author": "Gabo Goses 👨‍🎤 <gabogoses@gmail.com> (https://margoses.com)",
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "express-graphql": "^0.7.1",
-    "graphql": "^14.1.1"
+    "graphql": "^14.1.1",
+    "mongoose": "^5.4.16"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"
