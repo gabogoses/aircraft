@@ -43,6 +43,12 @@ module.exports = buildSchema(`
           createdPlanes: [Plane!]
         }
 
+        type AuthData {
+            userId: ID!
+            token: String!
+            tokenExpiration: Int!
+        }
+
         input PlaneInput {
             type: String!
             manufacturer: String!
@@ -83,6 +89,7 @@ module.exports = buildSchema(`
 
         type RootQuery {
             planes: [Plane!]!
+            login(email: String!, password: String!): AuthData!
         }
 
         type RootMutation {

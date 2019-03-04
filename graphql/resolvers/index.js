@@ -1,20 +1,25 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const Plane = require("../../models/plane");
 const User = require("../../models/user");
+const { dateToString } = require("../../helpers/date");
+
+const transformPlane = plane => {
+  return {
+    ...plane._doc,
+    _id: plane.id,
+    date: dateToString(plane._doc.date),
+    creator: user.bind(this, plane.creator)
+  };
+};
 
 const planes = async planeIds => {
   try {
     const planes = await Plane.find({ _id: { $in: planeIds } });
-    planes.map(plane => {
-      return {
-        ...plane._doc,
-        _id: plane.id,
-        date: new Date(plane._doc.date).toISOString(),
-        creator: user.bind(this, plane.creator)
-      };
+    return planes.map(plane => {
+      return transformPlane(plane);
     });
-    return planes;
   } catch (err) {
     throw err;
   }
@@ -38,18 +43,16 @@ module.exports = {
     try {
       const planes = await Plane.find();
       return planes.map(plane => {
-        return {
-          ...plane._doc,
-          _id: plane._id,
-          date: new Date(plane._doc.date).toISOString(),
-          creator: user.bind(this, plane._doc.creator)
-        };
+        return transformPlane(plane);
       });
     } catch (err) {
       console.log(err);
     }
   },
-  createPlane: async args => {
+  createPlane: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error("Unauthenticated");
+    }
     const plane = new Plane({
       type: args.planeInput.type,
       manufacturer: args.planeInput.manufacturer,
@@ -81,7 +84,7 @@ module.exports = {
       icaoCode: args.planeInput.icaoCode,
       iataCode: args.planeInput.iataCode,
       date: new Date(args.planeInput.date),
-      creator: "5c7c76afdc49224f7c5ca004"
+      creator: req.userId
     });
     let createdPlane;
     try {
@@ -89,10 +92,10 @@ module.exports = {
       createdPlane = {
         ...result._doc,
         _id: result._doc._id.toString(),
-        date: new Date(plane._doc.date).toISOString(),
+        date: dateToString(plane._doc.date),
         creator: user.bind(this, result._doc.creator)
       };
-      const creator = await User.findById("5c7c76afdc49224f7c5ca004");
+      const creator = await User.findById(eq.userId);
 
       if (!creator) {
         throw new Error("User not found.");
@@ -124,5 +127,24 @@ module.exports = {
     } catch (err) {
       throw err;
     }
+  },
+
+  login: async ({ email, password }) => {
+    const userLogin = await User.findOne({ email: email });
+    if (!userLogin) {
+      throw new Error("User does not exist!");
+    }
+    const isEqual = await bcrypt.compare(password, userLogin.password);
+    if (!isEqual) {
+      throw new Error("Password is incorrect");
+    }
+    const token = jwt.sign(
+      { userId: userLogin.id, email: userLogin.email },
+      "somesupersecretkey",
+      {
+        expiresIn: "1h"
+      }
+    );
+    return { userId: userLogin.id, token: token, tokenExpiration: 1 };
   }
 };
